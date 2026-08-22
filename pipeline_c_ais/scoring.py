@@ -35,11 +35,12 @@ def speed_anomaly_score(vessel_df):
     speeds = vessel_df['SOG'].dropna()
     if len(speeds) < 2:
         return 0
-    avg_speed = speeds.mean()
+    initial_speed = speeds.iloc[0]
     min_speed = speeds.min()
-    if avg_speed == 0:
+    if initial_speed < 1:  # already slow/stationary, nothing to detect
         return 0
-    return min(1, (avg_speed - min_speed) / avg_speed)
+    drop_ratio = (initial_speed - min_speed) / initial_speed
+    return max(0, min(1, drop_ratio))
 
 def ais_gap_score(vessel_df, expected_interval_minutes=15):
     vessel_df = vessel_df.sort_values('BaseDateTime')
@@ -54,7 +55,10 @@ def ais_gap_score(vessel_df, expected_interval_minutes=15):
 def vessel_type_score(vessel_type_code):
     if pd.isna(vessel_type_code):
         return 0.3
-    code = int(vessel_type_code)
+    try:
+        code = int(float(vessel_type_code))
+    except (ValueError, TypeError):
+        return 0.3
     if 80 <= code <= 89:
         return 1.0
     elif 70 <= code <= 79:

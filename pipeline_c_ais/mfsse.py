@@ -17,7 +17,7 @@ def run_mfsse(origin_polygon: dict, time_window: dict, ais_csv_path: str = None)
     origin_time = time_start
 
     minx, miny, maxx, maxy = poly.bounds
-    bbox = (miny - 0.5, maxy + 0.5, minx - 0.5, maxx + 0.5)
+    bbox = (miny - 0.25, maxy + 0.25, minx - 0.25, maxx + 0.25)
 
     if ais_csv_path:
         ais_df = load_ais_data(ais_csv_path, bbox=bbox)
