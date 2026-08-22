@@ -1,10 +1,10 @@
 from mfsse import run_mfsse
 
-fake_polygon = {
+guam_polygon = {
     "type": "Polygon",
-    "coordinates": [[[-88.4, 28.4], [-88.2, 28.4], [-88.2, 28.6], [-88.4, 28.6], [-88.4, 28.4]]]
+    "coordinates": [[[144.55, 13.35], [144.75, 13.35], [144.75, 13.55], [144.55, 13.55], [144.55, 13.35]]]
 }
-fake_time_window = {"start": "2024-01-15T00:00:00", "end": "2024-01-15T12:00:00"}
+guam_time_window = {"start": "2025-06-01T00:00:00", "end": "2025-06-01T12:00:00"}
 
-result = run_mfsse(fake_polygon, fake_time_window)
+result = run_mfsse(guam_polygon, guam_time_window, ais_csv_path="../data/guam_2025.csv")
 print(result)
