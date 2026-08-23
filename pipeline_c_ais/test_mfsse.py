@@ -1,4 +1,4 @@
-from mfsse import run_mfsse
+from .mfsse import run_mfsse
 
 guam_polygon = {
     "type": "Polygon",
@@ -6,8 +6,6 @@ guam_polygon = {
 }
 guam_time_window = {"start": "2025-06-01T00:00:00", "end": "2025-06-01T12:00:00"}
 
-result = run_mfsse(guam_polygon, guam_time_window, ais_csv_path="../data/guam_2025.csv")
-print(result)
 
 def test_synthetic_ranking_is_plausible():
     result = run_mfsse(guam_polygon, guam_time_window, ais_csv_path="../data/guam_2025.csv")
@@ -21,4 +19,8 @@ def test_synthetic_ranking_is_plausible():
     assert scores == sorted(scores, reverse=True), "suspects must be sorted by score descending"
     print("Synthetic ranking sanity check passed.")
 
-test_synthetic_ranking_is_plausible()
+
+if __name__ == "__main__":
+    result = run_mfsse(guam_polygon, guam_time_window, ais_csv_path="../data/guam_2025.csv")
+    print(result)
+    test_synthetic_ranking_is_plausible()

@@ -1,12 +1,11 @@
 from shapely.geometry import shape
 import pandas as pd
 
-from ais_loader import load_ais_data, generate_synthetic_ais
-from scoring import (
+from .ais_loader import load_ais_data, generate_synthetic_ais
+from .scoring import (
     proximity_score, trajectory_alignment_score,
     speed_anomaly_score, ais_gap_score, vessel_type_score
 )
-
 def run_mfsse(origin_polygon: dict, time_window: dict, ais_csv_path: str = None) -> dict:
     poly = shape(origin_polygon)
     centroid = poly.centroid
