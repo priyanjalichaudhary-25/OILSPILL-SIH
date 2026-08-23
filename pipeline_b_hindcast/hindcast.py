@@ -171,33 +171,40 @@ def run_hindcast(spill_polygon: dict, detection_timestamp, bbox: list,
      }
 
 if __name__ == "__main__":
-    # Manual test using the real MSC ELSA 3 case
     from datetime import datetime
+    from pipeline_a_detection.detection import run_detection
 
-    # Small placeholder polygon around the SAR-detected spill area
-    # (Replace with Pipeline A's real output once available)
-    test_spill_polygon = {
-        "type": "Polygon",
-        "coordinates": [[
-            [76.10, 9.28], [76.20, 9.28], [76.20, 9.38], [76.10, 9.38], [76.10, 9.28]
-        ]]
-    }
-    detection_time = datetime(2025, 5, 27, 0, 0, 0)
-    bbox = [75.9, 9.0, 76.5, 9.7]
+    # --- Step 1: Run Pipeline A to get a real (contract-shaped) spill polygon ---
+    placeholder_geotransform = (75.9, 0.0001, 0, 9.7, 0, -0.0001)
+    test_image = "kaggle/data/Class_1/class_1_00001.jpg"
+
+    detection_result = run_detection(test_image, geotransform=placeholder_geotransform)
+    test_spill_polygon = detection_result["spill_polygon"]
+    print("Pipeline A confidence:", detection_result["confidence"])
+    print("Pipeline A polygon vertex count:", len(test_spill_polygon["coordinates"][0]))
+
+    # --- Step 2: Feed Pipeline A's output into Pipeline B ---
+    detection_time = datetime(2025, 5, 27, 0, 0, 0)  # keep using your real demo timestamp
+    bbox = [74.9, 8.0, 77.6, 10.6]
 
     result = run_hindcast(test_spill_polygon, detection_time, bbox, backward_hours=36)
+
     print("Origin polygon:", result["origin_polygon"])
     print("Time window:", result["origin_time_window"])
     print("Num particle tracks:", len(result["particle_tracks"]["features"]))
-    # --- Placeholder "real SAR polygon" for validation sanity-check ---
-    # TODO: replace with Pipeline A's real detection output once available
+
+    # --- Step 3: Validation check ---
     placeholder_real_sar_polygon = {
         "type": "Polygon",
         "coordinates": [[
             [76.10, 9.28], [76.20, 9.28], [76.20, 9.38], [76.10, 9.38], [76.10, 9.28]
         ]]
     }
-
+    validation = compute_validation_confidence(
+        result["forward_validation_polygon"],
+        placeholder_real_sar_polygon
+    )
+    print("Validation:", validation)
     validation = compute_validation_confidence(
         result["forward_validation_polygon"],
         placeholder_real_sar_polygon
